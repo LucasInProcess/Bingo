@@ -1,0 +1,111 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BingoGame
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Gerar cartela de bingo
+            int[,] cartela = GerarCartela();
+            ExibirCartela(cartela);
+
+            // Realizar sorteio
+            List<int> numerosSorteados = new List<int>();
+            Random random = new Random();
+
+            while (true)
+            {
+                int numeroSorteado = random.Next(1, 76);
+                if (!numerosSorteados.Contains(numeroSorteado))
+                {
+                    numerosSorteados.Add(numeroSorteado);
+                    Console.WriteLine($"Número sorteado: {numeroSorteado}");
+
+                    // Verificar se o número sorteado está na cartela
+                    if (VerificarNumeroCartela(cartela, numeroSorteado))
+                    {
+                        Console.WriteLine("Número encontrado na cartela!");
+                    }
+
+                    // Simulação de uma jogada (apenas para fins de demonstração)
+                    if (numerosSorteados.Count == 75) // Todos os números foram sorteados
+                    {
+                        Console.WriteLine("Todos os números foram sorteados. Fim de jogo.");
+                        break;
+                    }
+
+                    // Pausa para continuar o sorteio (apenas para fins de demonstração)
+                    Console.WriteLine("Pressione qualquer tecla para sortear o próximo número...");
+                    Console.ReadKey();
+                }
+            }
+        }
+
+        static int[,] GerarCartela()
+        {
+            Random random = new Random();
+            int[,] cartela = new int[5, 5];
+            int[] limites = { 1, 16, 31, 46, 61 }; // Limites das colunas B, I, N, G, O
+
+            for (int coluna = 0; coluna < 5; coluna++)
+            {
+                HashSet<int> numerosColuna = new HashSet<int>();
+
+                while (numerosColuna.Count < 5)
+                {
+                    int numero = random.Next(limites[coluna], limites[coluna] + 15);
+                    if (numerosColuna.Add(numero))
+                    {
+                        cartela[numerosColuna.Count - 1, coluna] = numero;
+                    }
+                }
+            }
+
+            // Espaço livre no centro da cartela
+            cartela[2, 2] = 0;
+
+            return cartela;
+        }
+
+        static void ExibirCartela(int[,] cartela)
+        {
+            string[] colunas = { "B", "I", "N", "G", "O" };
+            Console.WriteLine("Cartela de Bingo:");
+            Console.WriteLine(" B   I   N   G   O");
+
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    if (cartela[i, j] == 0)
+                    {
+                        Console.Write(" *  ");
+                    }
+                    else
+                    {
+                        Console.Write($"{cartela[i, j]:D2}  ");
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
+        static bool VerificarNumeroCartela(int[,] cartela, int numero)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    if (cartela[i, j] == numero)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+}
